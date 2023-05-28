@@ -12,7 +12,6 @@ const questions = [
 
 const tickets = []; 
 
-
 function getCustomerInput(index) {
   prompt.get(questions[index], (err, result) => {
     if (err) {

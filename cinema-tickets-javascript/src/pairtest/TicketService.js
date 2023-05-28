@@ -10,14 +10,12 @@ export default class TicketService {
     this.#paymentService = new TicketPaymentService(); 
   }
  
-  purchaseTickets(accountId, ticketTypeRequests) {
-    ticketTypeRequests.forEach(elem => {
+  purchaseTickets(accountId, totalAmountToPay) {
       try {
-        this.#paymentService.makePayment(accountId, elem.getNoOfTickets() * elem.getPrice()); 
+        this.#paymentService.makePayment(accountId, totalAmountToPay); 
       }
       catch(err) {
         throw new Error(err); 
       }
-    });
   }
 }

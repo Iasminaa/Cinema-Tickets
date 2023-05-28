@@ -15,11 +15,13 @@ export default class Basket {
         this.#seatService = new SeatService(); 
     }
 
-    getTicketsNonInfant = () => this.#tickets.filter(ticket => ticket.getTicketType() === types.ADULT || ticket.getTicketType() === types.CHILD); 
+    #getTicketsNonInfant = () => this.#tickets.filter(ticket => ticket.getTicketType() === types.ADULT || ticket.getTicketType() === types.CHILD); 
     
-    getTotalSeats = () => this.getTicketsNonInfant().reduce((acc, ticket) => acc + ticket.getNoOfTickets(), 0);
+    #getTotalSeats = () => this.#getTicketsNonInfant().reduce((acc, ticket) => acc + ticket.getNoOfTickets(), 0);
 
-    isRequestValid() {
+    #getTotalPrice = () => this.#getTicketsNonInfant().reduce((acc, ticket) => acc + ticket.getNoOfTickets() * ticket.getPrice(), 0);
+    
+    #isRequestValid() {
         let adultTickets = this.#tickets.filter(ticket => ticket.getTicketType() === types.ADULT)
                                   .reduce((acc, ticket) => acc + ticket.getNoOfTickets(), 0); 
         if (adultTickets <= 0) {
@@ -27,7 +29,7 @@ export default class Basket {
             return false; 
         }
 
-        if(this.getTotalSeats() > this.#MAX_TICKETS){
+        if(this.#getTotalSeats() > this.#MAX_TICKETS){
             console.error(`Sorry a maximum of ${this.#MAX_TICKETS} tickets can be purchased at one time`); 
             return false; 
         }
@@ -36,14 +38,20 @@ export default class Basket {
     }
 
     book() {
-        if (!this.isRequestValid()) {
+        if (!this.#isRequestValid()) {
             return; 
         } 
 
         try {
-          this.#ticketService.purchaseTickets(this.#accountId, this.getTicketsNonInfant()); 
-          this.#seatService.reserveSeats(this.#accountId, this.getTotalSeats());
-          console.log("Enjoy your movie!"); 
+          
+          let numberOfSeatsToReserve = this.#getTotalSeats(); 
+          let totalPrice = this.#getTotalPrice(); 
+          this.#ticketService.purchaseTickets(this.#accountId, totalPrice); 
+          this.#seatService.reserveSeats(this.#accountId, numberOfSeatsToReserve);
+          console.log(` \nORDER CONFIRMATION: 
+                        \n${numberOfSeatsToReserve} seats reserved
+                        \nTotal £${totalPrice} 
+                        \nThank you for booking with us!\n\n`); 
         }
         catch (err) {
             console.error("Sorry there was an issue booking your tickets: ", err); 

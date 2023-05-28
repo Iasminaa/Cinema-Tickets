@@ -28,11 +28,11 @@ export default class TicketTypeRequest {
   }
 
   getPrice() {
-    if(this.#type.getTicketType === this.#type.ADULT){
+    if(this.#type === this.#Type[0]){
       return 20; 
     }
 
-    if(this.#type.getTicketType === this.#type.CHILD){
+    if(this.#type === this.#Type[1]){
       return 10; 
     }
     
