@@ -28,5 +28,8 @@ export default class TicketTypeRequest {
     return this.#type;
   }
 
+  book() {
+  }
+
   #Type = ['ADULT', 'CHILD', 'INFANT'];
 }

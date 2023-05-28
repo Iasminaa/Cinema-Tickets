@@ -1,5 +1,5 @@
-import TicketTypeRequest from './lib/TicketTypeRequest.js';
 import InvalidPurchaseException from './lib/InvalidPurchaseException.js';
+import TicketPaymentService from "../../thirdparty/paymentgateway/TicketPaymentService";
 
 export default class TicketService {
   /**
@@ -7,6 +7,13 @@ export default class TicketService {
    */
 
   purchaseTickets(accountId, ...ticketTypeRequests) {
-    // throws InvalidPurchaseException
+    ticketTypeRequests.forEach((ticket) => {
+      try {
+        TicketPaymentService.makePayment(accountId, ticket.getNoOfTickets()*ticket.getPrice()); 
+      }
+      catch(err) {
+        throw new Error(InvalidPurchaseException); 
+      }
+    });
   }
 }
