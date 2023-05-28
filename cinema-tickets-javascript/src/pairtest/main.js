@@ -1,6 +1,6 @@
 import prompt from 'prompt';
 import TicketTypeRequest from './lib/TicketTypeRequest.js';
-import Basket from './Basket.js'; 
+import TicketService from './TicketService.js'; 
 
 import {typeList} from './Types.js';
 
@@ -32,8 +32,8 @@ function getCustomerInput(index) {
         getCustomerInput(index + 1);
     } 
     else {
-        let basket = new Basket(tickets); 
-        basket.book();  
+        let basket = new TicketService(tickets); 
+        basket.purchaseTickets(2093874902);  
     }
   });
 }
