@@ -1,18 +1,22 @@
 import InvalidPurchaseException from './lib/InvalidPurchaseException.js';
-import TicketPaymentService from "../../thirdparty/paymentgateway/TicketPaymentService";
+import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
 
 export default class TicketService {
   /**
    * Should only have private methods other than the one below.
    */
-
-  purchaseTickets(accountId, ...ticketTypeRequests) {
-    ticketTypeRequests.forEach((ticket) => {
+  #paymentService
+  constructor() {
+    this.#paymentService = new TicketPaymentService(); 
+  }
+ 
+  purchaseTickets(accountId, ticketTypeRequests) {
+    ticketTypeRequests.forEach(elem => {
       try {
-        TicketPaymentService.makePayment(accountId, ticket.getNoOfTickets()*ticket.getPrice()); 
+        this.#paymentService.makePayment(accountId, elem.getNoOfTickets() * elem.getPrice()); 
       }
       catch(err) {
-        throw new Error(InvalidPurchaseException); 
+        throw new Error(err); 
       }
     });
   }

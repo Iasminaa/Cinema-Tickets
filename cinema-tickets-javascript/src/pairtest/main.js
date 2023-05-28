@@ -1,5 +1,8 @@
 import prompt from 'prompt';
-import {TicketTypeRequest} from '../pairtest/lib/TicketTypeRequest';
+import TicketTypeRequest from './lib/TicketTypeRequest.js';
+import TicketService from '../pairtest/TicketService.js';
+import SeatService from '../pairtest/SeatService.js';
+import {typeList} from '../pairtest/types.js';
 
 const questions = [
   'Adults: ',
@@ -9,25 +12,41 @@ const questions = [
 
 const tickets = []; 
 
-function askQuestion(index) {
+const accountId = 2093874902; 
+let ticketService = new TicketService(); 
+let seatService = new SeatService(); 
+
+function getCustomerInput(index) {
   prompt.get(questions[index], (err, result) => {
     if (err) {
-      console.error(err);
+      console.error("Error loading the questions: ", err);
       return;
     }
-    let numberOfTickets = result[questions[index]]; 
-    console.log(numberOfTickets);
-    tickets.push(new TicketTypeRequest(index,numberOfTickets))
- 
-    if (index !== questions.length - 1) {
-      askQuestion(index + 1);
+
+    try {
+        let numberOfTickets = parseInt(result[questions[index]]); 
+        tickets.push(new TicketTypeRequest(typeList[index], numberOfTickets))
     }
+    catch(err) {
+        console.error("Invalid input: ", err);
+        index = index - 1; 
+    }
+
+    if (index !== questions.length - 1) {
+        getCustomerInput(index + 1);
+    } 
     else {
-        console.log(tickets);
+          try {
+            ticketService.purchaseTickets(accountId, tickets); 
+            seatService.reserveSeats(accountId, tickets); 
+          }
+          catch (err) {
+              console.error("Sorry there was an issue booking your tickets: ", err); 
+          }
     }
   });
 }
 
-prompt.start();
-askQuestion(0);
+getCustomerInput(0);
+
 

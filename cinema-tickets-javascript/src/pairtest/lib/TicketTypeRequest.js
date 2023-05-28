@@ -28,7 +28,16 @@ export default class TicketTypeRequest {
     return this.#type;
   }
 
-  book() {
+  getPrice() {
+    if(this.#type.getTicketType === this.#type.ADULT){
+      return 20; 
+    }
+
+    if(this.#type.getTicketType === this.#type.CHILD){
+      return 10; 
+    }
+    
+    return 0; 
   }
 
   #Type = ['ADULT', 'CHILD', 'INFANT'];
