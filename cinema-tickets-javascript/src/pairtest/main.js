@@ -1,6 +1,8 @@
 import prompt from 'prompt';
 import TicketTypeRequest from './lib/TicketTypeRequest.js';
 import TicketService from './TicketService.js'; 
+import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
+import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js";
 
 import {typeList} from './Types.js';
 
@@ -11,7 +13,9 @@ const questions = [
 ];
 
 const tickets = []; 
-let ticketSvc = new TicketService(); 
+let paymentService = new TicketPaymentService(); 
+let seatService = new SeatReservationService(); 
+let ticketSvc = new TicketService(paymentService, seatService); 
 
 function getCustomerInput(index) {
   prompt.get(questions[index], (err, result) => {

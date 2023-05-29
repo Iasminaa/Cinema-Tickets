@@ -1,6 +1,4 @@
 import InvalidPurchaseException from './lib/InvalidPurchaseException.js';
-import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
-import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js";
 import {types} from './Types.js';
 
 export default class TicketService {
@@ -8,9 +6,9 @@ export default class TicketService {
     #seatService
     #MAX_TICKETS = 20; 
 
-    constructor(){
-        this.#paymentService = new TicketPaymentService(); 
-        this.#seatService = new SeatReservationService(); 
+    constructor(paymentService, seatService){
+        this.#paymentService = paymentService;
+        this.#seatService = seatService;
     }
 
     #getTicketsNonInfant = (ticketTypeRequests) => ticketTypeRequests.filter(ticket => ticket.getTicketType() === types.ADULT || ticket.getTicketType() === types.CHILD); 
