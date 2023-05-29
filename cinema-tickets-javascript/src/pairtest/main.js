@@ -11,6 +11,7 @@ const questions = [
 ];
 
 const tickets = []; 
+let ticketSvc = new TicketService(); 
 
 function getCustomerInput(index) {
   prompt.get(questions[index], (err, result) => {
@@ -32,8 +33,7 @@ function getCustomerInput(index) {
         getCustomerInput(index + 1);
     } 
     else {
-        let ticketSvc = new TicketService(tickets); 
-        ticketSvc.purchaseTickets(2093874902);  // TODO: refactor this to pass tickets, deal with the exception, add unit tests.
+        ticketSvc.purchaseTickets(2093874902, tickets[0], tickets[1], tickets[2]);
     }
   });
 }
