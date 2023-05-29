@@ -1,10 +1,9 @@
 import InvalidPurchaseException from './lib/InvalidPurchaseException.js';
 import TicketPaymentService from "../thirdparty/paymentgateway/TicketPaymentService.js";
-import InvalidSeatAllocationException from './lib/InvalidPurchaseException.js';
 import SeatReservationService from "../thirdparty/seatbooking/SeatReservationService.js";
 import {types} from './Types.js';
 
-export default class Basket {
+export default class TicketService {
     #tickets;
     #paymentService
     #seatService
@@ -26,51 +25,36 @@ export default class Basket {
         let adultTickets = this.#tickets.filter(ticket => ticket.getTicketType() === types.ADULT)
                                   .reduce((acc, ticket) => acc + ticket.getNoOfTickets(), 0); 
         if (adultTickets <= 0) {
-            console.error("Sorry children and infants must be accompanied by an adult"); 
-            return false; 
+           return "Sorry children and infants must be accompanied by an adult"; 
         }
 
         if(this.#getTotalSeats() > this.#MAX_TICKETS){
-            console.error(`Sorry a maximum of ${this.#MAX_TICKETS} tickets can be purchased at one time`); 
-            return false; 
+            return `Sorry a maximum of ${this.#MAX_TICKETS} tickets can be purchased at one time`;
         }
 
-        return true; 
+        return null; 
     }
 
     purchaseTickets(accountId, ...ticketTypeRequests) {
-        if (!this.#isRequestValid()) {
-            return; 
+        let errMsg = this.#isRequestValid(); 
+        if (errMsg != null) {
+            throw new InvalidPurchaseException("Sorry there was an issue booking your tickets: "+errMsg);
         } 
 
         try {
+              let numberOfSeatsToReserve = this.#getTotalSeats(); 
+              let totalPrice = this.#getTotalPrice(); 
+              this.#paymentService.makePayment(accountId, totalPrice); 
+              this.#seatService.reserveSeat(accountId, numberOfSeatsToReserve); 
           
-          let numberOfSeatsToReserve = this.#getTotalSeats(); 
-          let totalPrice = this.#getTotalPrice(); 
-
-          try {
-            this.#paymentService.makePayment(accountId, totalPrice); 
-          }
-          catch(err) {
-            throw new Error(err); 
-          }
-
-          try {
-            this.#seatService.reserveSeat(accountId, numberOfSeatsToReserve); 
-          }
-          catch(err) {
-            throw new Error(err); 
-          }
-    
-          console.log(` \nORDER CONFIRMATION: 
-                        \nAccount: ${accountId} 
-                        \n${numberOfSeatsToReserve} seats reserved
-                        \nTotal £${totalPrice} 
-                        \nThank you for booking with us!\n\n`); 
+              console.log(` \nORDER CONFIRMATION: 
+                            \nAccount: ${accountId} 
+                            \n${numberOfSeatsToReserve} seats reserved
+                            \nTotal £${totalPrice} 
+                            \nThank you for booking with us!\n\n`); 
         }
         catch (err) {
-            console.error("Sorry there was an issue booking your tickets: ", err); 
-            return; 
+            throw new InvalidPurchaseException("Sorry there was an issue booking your tickets: "+err.message);
         }
     }
 }

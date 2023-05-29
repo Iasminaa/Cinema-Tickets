@@ -32,8 +32,8 @@ function getCustomerInput(index) {
         getCustomerInput(index + 1);
     } 
     else {
-        let basket = new TicketService(tickets); 
-        basket.purchaseTickets(2093874902);  
+        let ticketSvc = new TicketService(tickets); 
+        ticketSvc.purchaseTickets(2093874902);  // TODO: refactor this to pass tickets, deal with the exception, add unit tests.
     }
   });
 }
